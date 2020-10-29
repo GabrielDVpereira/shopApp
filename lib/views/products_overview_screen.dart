@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop/providers/cart.dart';
 import 'package:shop/providers/products.dart';
 import 'package:shop/utils/appRoutes.dart';
+import 'package:shop/widgets/app_drawer.dart';
 import 'package:shop/widgets/badge.dart';
 import 'package:shop/widgets/productGrid.dart';
 
@@ -13,6 +14,7 @@ class ProductsOverviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final Products products = Provider.of(context);
     return Scaffold(
+      drawer: AppDrawer(),
       appBar: AppBar(
         title: Text('Minha Loja'),
         actions: [
