@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/providers/products.dart';
+import 'package:shop/utils/appRoutes.dart';
 import 'package:shop/widgets/app_drawer.dart';
+import 'package:shop/widgets/product_item.dart';
 
 class ProductsScreen extends StatelessWidget {
   @override
@@ -12,7 +14,11 @@ class ProductsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Gerenciar Produtos'),
         actions: [
-          IconButton(icon: Icon(Icons.add), onPressed: () {}),
+          IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                Navigator.of(context).pushNamed(AppRoutes.PRODUCT_FORM);
+              }),
         ],
       ),
       drawer: AppDrawer(),
@@ -20,7 +26,12 @@ class ProductsScreen extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: ListView.builder(
           itemCount: products.items.length,
-          itemBuilder: (ctx, i) => Text('teste'),
+          itemBuilder: (ctx, i) => Column(
+            children: [
+              ProductItem(products.items[i]),
+              Divider(),
+            ],
+          ),
         ),
       ),
     );
