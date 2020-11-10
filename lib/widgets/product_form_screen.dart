@@ -6,6 +6,7 @@ class FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<FormScreen> {
+  final _priceFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +18,20 @@ class _FormScreenState extends State<FormScreen> {
           TextFormField(
             decoration: InputDecoration(labelText: 'Título'),
             textInputAction: TextInputAction.next,
-          )
+            onFieldSubmitted: (_) {
+              FocusScope.of(context).requestFocus(_priceFocusNode);
+            },
+          ),
+          TextFormField(
+            decoration: InputDecoration(labelText: 'Preço'),
+            textInputAction: TextInputAction.next,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            focusNode: _priceFocusNode,
+          ),
+          TextFormField(
+            decoration: InputDecoration(labelText: 'Título'),
+            textInputAction: TextInputAction.next,
+          ),
         ])),
       ),
     );
