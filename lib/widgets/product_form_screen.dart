@@ -24,7 +24,21 @@ class _FormScreenState extends State<FormScreen> {
   }
 
   void _updateImageUrl() {
-    setState(() {});
+    if (isValidImageUrl(_imageUrlController.text)) {
+      setState(() {});
+    }
+  }
+
+  bool isValidImageUrl(String url) {
+    bool startsWithHttp = url.toLowerCase().startsWith('http://');
+    bool startsWithHttps = url.toLowerCase().startsWith('https://');
+
+    bool endsWithPng = url.toLowerCase().endsWith('.png');
+    bool endsWithJpg = url.toLowerCase().endsWith('.jpg');
+    bool endsWithJpeg = url.toLowerCase().endsWith('.jpeg');
+
+    return (startsWithHttp || startsWithHttps) &&
+        (endsWithJpeg || endsWithPng || endsWithJpg);
   }
 
   void _saveForm() {
@@ -92,6 +106,16 @@ class _FormScreenState extends State<FormScreen> {
                   FocusScope.of(context).requestFocus(_descriptionFocusNode);
                 },
                 onSaved: (value) => _formData['price'] = double.parse(value),
+                validator: (value) {
+                  bool isEmpty = value.trim().isEmpty;
+                  var newPrice = double.tryParse(value);
+                  bool isInvalid = newPrice == null || newPrice <= 0;
+
+                  if (isEmpty || isInvalid) {
+                    return 'Informe um preço válido!';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Descrição'),
@@ -113,6 +137,14 @@ class _FormScreenState extends State<FormScreen> {
                       onSaved: (value) => _formData['imageUrl'] = value,
                       onFieldSubmitted: (_) {
                         _saveForm();
+                      },
+                      validator: (value) {
+                        bool isValid = value.trim().isEmpty;
+                        bool invalidUrl = isValidImageUrl(value);
+                        if (isValid || invalidUrl) {
+                          return 'Informe uma URL válida!';
+                        }
+                        return null;
                       },
                     ),
                   ),
