@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/providers/product.dart';
 import 'package:shop/providers/products.dart';
 
@@ -48,11 +49,13 @@ class _FormScreenState extends State<FormScreen> {
     }
     _form.currentState.save();
     final newProduct = Product(
-        id: Random().nextDouble().toString(),
         title: _formData['title'],
         price: _formData['price'],
         description: _formData['description'],
         imageUrl: _formData['imageUrl']);
+
+    Provider.of<Products>(context, listen: false).addProduct(newProduct);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -91,7 +94,9 @@ class _FormScreenState extends State<FormScreen> {
                 },
                 onSaved: (value) => _formData['title'] = value,
                 validator: (value) {
-                  if (value.trim().isEmpty) {
+                  bool isEmpty = value.trim().isEmpty;
+                  bool isInvalid = value.trim().length < 3;
+                  if (isEmpty || isInvalid) {
                     return 'Informe um título válido!';
                   }
                   return null;
@@ -123,6 +128,14 @@ class _FormScreenState extends State<FormScreen> {
                 keyboardType: TextInputType.multiline,
                 focusNode: _descriptionFocusNode,
                 onSaved: (value) => _formData['description'] = value,
+                validator: (value) {
+                  bool isEmpty = value.trim().isEmpty;
+                  bool isInvalid = value.trim().length < 3;
+                  if (isEmpty || isInvalid) {
+                    return 'Informe um título válido!';
+                  }
+                  return null;
+                },
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -140,7 +153,7 @@ class _FormScreenState extends State<FormScreen> {
                       },
                       validator: (value) {
                         bool isValid = value.trim().isEmpty;
-                        bool invalidUrl = isValidImageUrl(value);
+                        bool invalidUrl = !isValidImageUrl(value);
                         if (isValid || invalidUrl) {
                           return 'Informe uma URL válida!';
                         }
