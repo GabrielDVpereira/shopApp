@@ -8,7 +8,9 @@ import 'product.dart';
 
 // ChangeNotifier notifica mudancas pra quem consumir esse provider
 class Products with ChangeNotifier {
-  List<Product> _items = DUMMY_PRODUCTS;
+  final _url = "https://flutter-cod3r-d235e.firebaseio.com/products.json";
+
+  List<Product> _items = [];
 
   bool _showFavoriteOnly = false;
 
@@ -29,11 +31,35 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loadProducts() async {
+    final response = await http.get(_url);
+    Map<String, dynamic> data = json.decode(response.body);
+
+    _items.clear();
+    if (data != null) {
+      data.forEach(
+        (productFirebaseId, productData) {
+          _items.add(
+            Product(
+              id: productFirebaseId,
+              title: productData["title"],
+              description: productData["description"],
+              price: productData["price"],
+              imageUrl: productData["imageUrl"],
+              isFavorite: productData["isFavorite"],
+            ),
+          );
+        },
+      );
+    }
+    notifyListeners();
+    return Future.value();
+  }
+
   Future<void> addProduct(Product product) async {
-    const url = 'https://flutter-cod3r-d235e.firebaseio.com/products';
     try {
       var response = await http.post(
-        url,
+        _url,
         body: json.encode({
           'title': product.title,
           'description': product.description,

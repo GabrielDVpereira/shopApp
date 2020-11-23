@@ -9,7 +9,25 @@ import 'package:shop/widgets/productGrid.dart';
 
 enum FilterOptions { Favorite, All }
 
-class ProductsOverviewScreen extends StatelessWidget {
+class ProductsOverviewScreen extends StatefulWidget {
+  @override
+  _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
+}
+
+class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
+  bool isProductRequestLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // chamar get productrs
+    Provider.of<Products>(context, listen: false).loadProducts().then((_) {
+      setState(() {
+        isProductRequestLoading = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final Products products = Provider.of(context);
@@ -51,7 +69,11 @@ class ProductsOverviewScreen extends StatelessWidget {
           )
         ],
       ),
-      body: ProductGrid(),
+      body: isProductRequestLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductGrid(),
     );
   }
 }
