@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shop/data/dummy_data.dart';
 import 'product.dart';
 
@@ -27,17 +29,35 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void addProduct(Product product) {
-    _items.add(
-      Product(
-        id: Random().nextDouble().toString(),
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl,
-      ),
-    );
-    notifyListeners();
+  Future<void> addProduct(Product product) async {
+    const url = 'https://flutter-cod3r-d235e.firebaseio.com/products';
+    try {
+      var response = await http.post(
+        url,
+        body: json.encode({
+          'title': product.title,
+          'description': product.description,
+          'price': product.price,
+          'imageUrl': product.imageUrl,
+          'isFavorite': product.isFavorite
+        }),
+      );
+
+      _items.add(
+        Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl,
+        ),
+      );
+      notifyListeners();
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
   void updateProduct(Product product) {
