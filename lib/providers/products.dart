@@ -8,7 +8,7 @@ import 'product.dart';
 
 // ChangeNotifier notifica mudancas pra quem consumir esse provider
 class Products with ChangeNotifier {
-  final _url = "https://flutter-cod3r-d235e.firebaseio.com/products.json";
+  final _baseUrl = "https://flutter-cod3r-d235e.firebaseio.com/products";
 
   List<Product> _items = [];
 
@@ -32,7 +32,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> loadProducts() async {
-    final response = await http.get(_url);
+    final response = await http.get("$_baseUrl.json");
     Map<String, dynamic> data = json.decode(response.body);
 
     _items.clear();
@@ -59,7 +59,7 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     try {
       var response = await http.post(
-        _url,
+        "$_baseUrl.json",
         body: json.encode({
           'title': product.title,
           'description': product.description,
@@ -86,15 +86,28 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(Product product) {
+  Future<void> updateProduct(Product product) async {
     if (product == null || product.id == null) {
       return;
     }
     final index = _items.indexWhere((prod) => prod.id == product.id);
 
     if (index >= 0) {
+      await http.patch(
+        "$_baseUrl/${product.id}.json",
+        body: json.encode(
+          {
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+          },
+        ),
+      );
+
       _items[index] = product;
       notifyListeners();
+      return Future.value();
     }
   }
 

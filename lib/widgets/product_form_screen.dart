@@ -81,32 +81,34 @@ class _FormScreenState extends State<FormScreen> {
     });
 
     final products = Provider.of<Products>(context, listen: false);
-    if (_formData['_id'] == null) {
-      try {
+    try {
+      if (_formData['_id'] == null) {
         await products.addProduct(product);
-      } catch (error) {
-        await showDialog<Null>(
-            context: context,
-            builder: (ctx) => AlertDialog(
-                    title: Text('Ocorreu um erro!'),
-                    content: Text(
-                      'Tente novamente mais tarde...',
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text('Ok'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      )
-                    ]));
-      } finally {
-        setState(() {
-          isLoading = false;
-        });
+      } else {
+        await products.updateProduct(product);
       }
-    } else {
-      products.updateProduct(product);
+      Navigator.of(context).pop();
+    } catch (error) {
+      await showDialog<Null>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Ocorreu um erro!'),
+          content: Text(
+            'Tente novamente mais tarde...',
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Ok'),
+              onPressed: () => Navigator.of(context).pop(),
+            )
+          ],
+        ),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
-    Navigator.of(context).pop();
   }
 
   @override
