@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/exceptions/http_exceptions.dart';
+import 'package:shop/utils/constants.dart';
 import 'product.dart';
 
 // ChangeNotifier notifica mudancas pra quem consumir esse provider
 class Products with ChangeNotifier {
-  final _baseUrl = "https://flutter-cod3r-d235e.firebaseio.com/products";
+  final _baseUrl = "${Constants.BASE_API_URL}/products";
 
   List<Product> _items = [];
 

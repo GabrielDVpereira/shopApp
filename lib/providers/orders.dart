@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/providers/cart.dart';
+import 'package:shop/utils/constants.dart';
 
 class Order {
   final String id;
@@ -15,7 +16,7 @@ class Order {
 }
 
 class Orders with ChangeNotifier {
-  final _baseUrl = "https://flutter-cod3r-d235e.firebaseio.com/orders";
+  final _baseUrl = "${Constants.BASE_API_URL}/orders";
 
   List<Order> _items = [];
   List<Order> loadedItems = [];

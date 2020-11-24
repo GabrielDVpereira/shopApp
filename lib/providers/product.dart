@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/exceptions/http_exceptions.dart';
+import 'package:shop/utils/constants.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -23,7 +24,7 @@ class Product with ChangeNotifier {
   });
 
   Future<void> toggleFavorite() async {
-    final _baseUrl = "https://flutter-cod3r-d235e.firebaseio.com/products";
+    final _baseUrl = "${Constants.BASE_API_URL}/products";
 
     isFavorite = !isFavorite;
     notifyListeners();
