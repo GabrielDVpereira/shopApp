@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'package:shop/exceptions/http_exceptions.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,8 +22,23 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavorite() {
+  Future<void> toggleFavorite() async {
+    final _baseUrl = "https://flutter-cod3r-d235e.firebaseio.com/products";
+
     isFavorite = !isFavorite;
     notifyListeners();
+
+    final reponse = await http.patch(
+      "$_baseUrl/$id.json",
+      body: json.encode(
+        {"isFavorite": isFavorite},
+      ),
+    );
+
+    if (reponse.statusCode >= 400) {
+      isFavorite = !isFavorite;
+      notifyListeners();
+      throw HttpException('Ocorreu um erro.');
+    }
   }
 }

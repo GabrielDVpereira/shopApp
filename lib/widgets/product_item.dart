@@ -9,8 +9,9 @@ class ProductItem extends StatelessWidget {
   ProductItem(this.product);
   @override
   Widget build(BuildContext context) {
-    void confirmDelete() {
-      showDialog(
+    final scaffold = Scaffold.of(context);
+    void confirmDelete() async {
+      bool confirmDelete = await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
           title: Text('Tem certeza?'),
@@ -18,21 +19,33 @@ class ProductItem extends StatelessWidget {
           actions: [
             FlatButton(
               onPressed: () {
-                Navigator.of(ctx).pop();
+                Navigator.of(ctx).pop(false);
               },
               child: Text('Não'),
             ),
             FlatButton(
               onPressed: () {
-                Provider.of<Products>(context, listen: false)
-                    .deleteProduct(product.id);
-                Navigator.of(ctx).pop();
+                Navigator.of(ctx).pop(true);
               },
               child: Text('Sim'),
             ),
           ],
         ),
       );
+
+      if (confirmDelete) {
+        try {
+          await Provider.of<Products>(context, listen: false)
+              .deleteProduct(product.id);
+        } catch (err) {
+          print('aaaaaaaaaaaaaaaa');
+          scaffold.showSnackBar(
+            SnackBar(
+              content: Text(err.toString()),
+            ),
+          );
+        }
+      }
     }
 
     return ListTile(

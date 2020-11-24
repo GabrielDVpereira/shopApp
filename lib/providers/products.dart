@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop/data/dummy_data.dart';
+import 'package:shop/exceptions/http_exceptions.dart';
 import 'product.dart';
 
 // ChangeNotifier notifica mudancas pra quem consumir esse provider
@@ -111,12 +110,21 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
+  Future<void> deleteProduct(String id) async {
     final index = _items.indexWhere((prod) => prod.id == id);
 
     if (index >= 0) {
-      _items.removeWhere((product) => product.id == id);
+      final product = _items[index];
+      _items.remove(product);
       notifyListeners();
+
+      final response = await http.delete("$_baseUrl/$id.json");
+
+      if (response.statusCode >= 400) {
+        _items.insert(index, product);
+        notifyListeners();
+        throw HttpException("Ocorreu um erro na exclusão do produto.");
+      }
     }
   }
 }
