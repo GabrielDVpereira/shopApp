@@ -18,6 +18,7 @@ class Orders with ChangeNotifier {
   final _baseUrl = "https://flutter-cod3r-d235e.firebaseio.com/orders";
 
   List<Order> _items = [];
+  List<Order> loadedItems = [];
 
   List<Order> get items {
     return [..._items];
@@ -25,6 +26,37 @@ class Orders with ChangeNotifier {
 
   int get itemsCount {
     return _items.length;
+  }
+
+  Future<void> loadOrders() async {
+    final response = await http.get("$_baseUrl.json");
+    Map<String, dynamic> data = json.decode(response.body);
+    print(data);
+
+    if (data != null) {
+      data.forEach(
+        (orderFirebaseId, orderData) {
+          loadedItems.add(
+            Order(
+              id: orderFirebaseId,
+              total: orderData['total'],
+              date: DateTime.parse(orderData['date']),
+              products: (orderData['products'] as List<dynamic>).map((item) {
+                return CartItem(
+                    id: item['id'],
+                    price: item['price'],
+                    productId: item['productId'],
+                    quantity: item['quantity'],
+                    title: item['title']);
+              }).toList(),
+            ),
+          );
+        },
+      );
+      notifyListeners();
+    }
+    _items = loadedItems.reversed.toList();
+    return Future.value();
   }
 
   Future<void> addOrder(List<CartItem> productsOnCart, double total) async {
