@@ -9,6 +9,23 @@ class Auth with ChangeNotifier {
   static final _signUp_url = DotEnv().env['SIGNUP_URL'];
   static final _signIn_url = DotEnv().env['SIGNIN_URL'];
 
+  DateTime _expiryDate;
+  String _token;
+
+  String get token {
+    if (_token != null &&
+        _expiryDate != null &&
+        _expiryDate.isAfter(DateTime.now())) {
+      return _token;
+    } else {
+      return null;
+    }
+  }
+
+  bool get isAuth {
+    return token != null;
+  }
+
   Future<void> _authenticate(String email, String password, String url) async {
     final response = await http.post(
       url,
@@ -25,8 +42,15 @@ class Auth with ChangeNotifier {
 
     if (responseBody['error'] != null) {
       throw AuthException(responseBody['error']['message']);
+    } else {
+      _token = responseBody['idToken'];
+      _expiryDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseBody['expiresIn']),
+        ),
+      );
     }
-
+    notifyListeners();
     return Future.value();
   }
 
