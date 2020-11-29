@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop/providers/auth.dart';
 
 enum AuthMode { SignUp, Login }
 
@@ -15,7 +17,7 @@ class _AuthCardState extends State<AuthCard> {
   bool _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_form.currentState.validate()) {
       return;
     }
@@ -26,10 +28,12 @@ class _AuthCardState extends State<AuthCard> {
 
     _form.currentState.save();
 
+    Auth auth = Provider.of(context, listen: false);
+
     if (_authMode == AuthMode.Login) {
-      //chamar login
+      await auth.signIn(_authData['email'], _authData['password']);
     } else {
-      // chamar signup
+      await auth.signUp(_authData['email'], _authData['password']);
     }
 
     setState(() {
@@ -93,6 +97,7 @@ class _AuthCardState extends State<AuthCard> {
                 TextFormField(
                   decoration: InputDecoration(labelText: "Confirmar Senha"),
                   keyboardType: TextInputType.emailAddress,
+                  obscureText: true,
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return "Senhas são diferentes";
