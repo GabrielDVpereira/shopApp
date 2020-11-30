@@ -9,12 +9,15 @@ import 'product.dart';
 // ChangeNotifier notifica mudancas pra quem consumir esse provider
 class Products with ChangeNotifier {
   final _baseUrl = "${Constants.BASE_API_URL}/products";
+  final _favBaseUrl = "${Constants.BASE_API_URL}/userFav";
 
   List<Product> _items = [];
   final String _token;
+  final String _userId;
+
   bool _showFavoriteOnly = false;
 
-  Products(this._token, this._items);
+  Products([this._token, this._userId, this._items = const []]);
 
   List<Product> get items {
     if (_showFavoriteOnly) {
@@ -35,6 +38,11 @@ class Products with ChangeNotifier {
 
   Future<void> loadProducts() async {
     final response = await http.get("$_baseUrl.json?auth=$_token");
+
+    final favResponse =
+        await http.get("$_favBaseUrl/$_userId.json?auth=$_token");
+    final favMap = json.decode(favResponse.body);
+
     Map<String, dynamic> data = json.decode(response.body);
 
     _items.clear();
@@ -48,7 +56,8 @@ class Products with ChangeNotifier {
               description: productData["description"],
               price: productData["price"],
               imageUrl: productData["imageUrl"],
-              isFavorite: productData["isFavorite"],
+              isFavorite:
+                  favMap == null ? false : favMap[productFirebaseId] ?? false,
             ),
           );
         },

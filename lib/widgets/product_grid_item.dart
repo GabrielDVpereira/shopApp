@@ -16,7 +16,7 @@ class ProductGridItem extends StatelessWidget {
       final Auth auth = Provider.of(context, listen: false);
 
       try {
-        await product.toggleFavorite(auth.token);
+        await product.toggleFavorite(auth.token, auth.userId);
       } catch (err) {
         scaffold.showSnackBar(
           SnackBar(

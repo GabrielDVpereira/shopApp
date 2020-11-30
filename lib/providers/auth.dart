@@ -11,6 +11,7 @@ class Auth with ChangeNotifier {
 
   DateTime _expiryDate;
   String _token;
+  String _userId;
 
   String get token {
     if (_token != null &&
@@ -20,6 +21,10 @@ class Auth with ChangeNotifier {
     } else {
       return null;
     }
+  }
+
+  String get userId {
+    return isAuth ? _userId : null;
   }
 
   bool get isAuth {
@@ -44,6 +49,8 @@ class Auth with ChangeNotifier {
       throw AuthException(responseBody['error']['message']);
     } else {
       _token = responseBody['idToken'];
+      _userId = responseBody['localId'];
+
       _expiryDate = DateTime.now().add(
         Duration(
           seconds: int.parse(responseBody['expiresIn']),
