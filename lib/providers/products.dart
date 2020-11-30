@@ -96,7 +96,7 @@ class Products with ChangeNotifier {
 
     if (index >= 0) {
       await http.patch(
-        "$_baseUrl/${product.id}.json",
+        "$_baseUrl/${product.id}.json?auth=$_token",
         body: json.encode(
           {
             'title': product.title,
@@ -121,7 +121,7 @@ class Products with ChangeNotifier {
       _items.remove(product);
       notifyListeners();
 
-      final response = await http.delete("$_baseUrl/$id.json");
+      final response = await http.delete("$_baseUrl/$id.json?auth=$_token");
 
       if (response.statusCode >= 400) {
         _items.insert(index, product);

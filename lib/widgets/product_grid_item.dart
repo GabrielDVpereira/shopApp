@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/providers/auth.dart';
 import 'package:shop/providers/cart.dart';
 import 'package:shop/providers/product.dart';
 import '../utils/appRoutes.dart';
@@ -12,9 +13,10 @@ class ProductGridItem extends StatelessWidget {
 
     toggleFavorite(context) async {
       final scaffold = Scaffold.of(context);
+      final Auth auth = Provider.of(context, listen: false);
 
       try {
-        await product.toggleFavorite();
+        await product.toggleFavorite(auth.token);
       } catch (err) {
         scaffold.showSnackBar(
           SnackBar(
