@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -18,9 +17,10 @@ class Order {
 class Orders with ChangeNotifier {
   final _baseUrl = "${Constants.BASE_API_URL}/orders";
   String _token;
+  String _userId;
   List<Order> _items = [];
 
-  Orders(this._token, this._items);
+  Orders(this._token, this._userId, this._items);
 
   List<Order> loadedItems = [];
 
@@ -33,7 +33,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> loadOrders() async {
-    final response = await http.get("$_baseUrl.json?auth=$_token");
+    final response = await http.get("$_baseUrl/$_userId.json?auth=$_token");
     Map<String, dynamic> data = json.decode(response.body);
     print(data);
 
@@ -66,7 +66,7 @@ class Orders with ChangeNotifier {
   Future<void> addOrder(List<CartItem> productsOnCart, double total) async {
     final date = DateTime.now();
 
-    final response = await http.post("$_baseUrl.json?auth=$_token",
+    final response = await http.post("$_baseUrl/$_userId.json?auth=$_token",
         body: json.encode({
           "total": total,
           "date": date.toIso8601String(),

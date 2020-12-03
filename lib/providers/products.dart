@@ -70,7 +70,7 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     try {
       var response = await http.post(
-        "$_baseUrl.json",
+        "$_baseUrl.json?auth=$_token",
         body: json.encode({
           'title': product.title,
           'description': product.description,
