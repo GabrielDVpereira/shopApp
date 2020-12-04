@@ -72,19 +72,29 @@ class _AuthCardState extends State<AuthCard>
   }
 
   Future<void> _submit() async {
+    print('aaaaaa');
+
     if (!_form.currentState.validate()) {
+      print('cccccc');
+
       return;
     }
+
+    print('dddddddd');
 
     setState(() {
       _isLoading = true;
     });
 
     _form.currentState.save();
+    print('eeeeeeee');
 
     Auth auth = Provider.of(context, listen: false);
+    print('fffff');
+
     try {
       if (_authMode == AuthMode.Login) {
+        print('ggggggg');
         await auth.signIn(_authData['email'], _authData['password']);
       } else {
         await auth.signUp(_authData['email'], _authData['password']);
@@ -170,12 +180,6 @@ class _AuthCardState extends State<AuthCard>
                       decoration: InputDecoration(labelText: "Confirmar Senha"),
                       keyboardType: TextInputType.emailAddress,
                       obscureText: true,
-                      validator: (value) {
-                        if (value != _passwordController.text) {
-                          return "Senhas são diferentes";
-                        }
-                        return null;
-                      },
                     ),
                   ),
                 ),
