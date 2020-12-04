@@ -10,9 +10,31 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
   Map<String, String> _authData = {"email": "", 'password': ""};
   AuthMode _authMode = AuthMode.Login;
+
+  AnimationController _controller;
+  Animation<Size> _heightAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(
+        milliseconds: 300,
+      ),
+    );
+
+    _heightAnimation = Tween(
+      begin: Size(double.infinity, 290),
+      end: Size(double.infinity, 371),
+    ).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+  }
 
   GlobalKey<FormState> _form = GlobalKey();
   bool _isLoading = false;
@@ -71,10 +93,12 @@ class _AuthCardState extends State<AuthCard> {
     if (_authMode == AuthMode.Login) {
       setState(() {
         _authMode = AuthMode.SignUp;
+        _controller.forward();
       });
     } else {
       setState(() {
         _authMode = AuthMode.Login;
+        _controller.reverse();
       });
     }
   }
@@ -87,10 +111,8 @@ class _AuthCardState extends State<AuthCard> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Container(
-        padding: EdgeInsets.all(16),
-        height: _authMode == AuthMode.Login ? 290 : 371,
-        width: deviceSize.width * 0.75,
+      child: AnimatedBuilder(
+        animation: _heightAnimation,
         child: Form(
           key: _form,
           child: Column(
@@ -155,6 +177,14 @@ class _AuthCardState extends State<AuthCard> {
             ],
           ),
         ),
+        builder: (ctx, child) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            height: _heightAnimation.value.height,
+            width: deviceSize.width * 0.75,
+            child: child,
+          );
+        },
       ),
     );
   }
