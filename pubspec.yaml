@@ -21,6 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  firebase_messaging: ^7.0.3
   shared_preferences: ^0.5.12+4
   flutter_dotenv: ^2.1.0
   flutter:
